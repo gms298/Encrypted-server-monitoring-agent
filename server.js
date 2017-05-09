@@ -5,6 +5,8 @@ var cpu_util = 0.0;
 var mem_util;
 var cpu_temp;
 var cpu_type;
+var fsSize;
+var fsStats;
 
 // Gather performance data every 500 ms throughout the lifetime
 setInterval(function() {
@@ -26,6 +28,17 @@ setInterval(function() {
         mem_util = data;
     });
 
+    // Disk Statistics
+    si.fsSize(function(data) {
+        fsSize = data;
+        //console.log(fsSize)
+    });
+
+    si.fsStats(function(data) {
+        fsStats = data;
+        //console.log(fsStats)
+    });
+
 }, 750);
 
 // Upon successful connection, emit socket events every 3s
@@ -41,7 +54,11 @@ io.on('connection', function (socket) {
                 util: cpu_util,
                 temp: cpu_temp
             },
-            memory: mem_util
+            memory: mem_util,
+            filesystem: {
+                fsSize: fsSize,
+                fsStats: fsStats
+            }
 		};
 		console.log("Emitting Socket event",data)
 		socket.emit("heartbeat", data);

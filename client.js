@@ -38,6 +38,12 @@ socket.on('heartbeat', function(data) {
             BufferedCache: data.memory.buffcache,
             UsedPercent: usedPercent(data.memory.total, data.memory.available),
             AvailablePercent: availPercent(data.memory.total, data.memory.available)
+        },
+        Disk: {
+            Used: data.filesystem.fsSize[0].use,
+            Read_sec: parseInt(data.filesystem.fsStats.rx_sec),
+            Write_sec: parseInt(data.filesystem.fsStats.wx_sec),
+            Total_sec: parseInt(data.filesystem.fsStats.tx_sec)
         }
     }
     console.log(results);
