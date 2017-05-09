@@ -49,24 +49,51 @@ setInterval(function() {
 io.on('connection', function (socket) {
 	console.log("Received connection");
 
-	var heartbeatTimer = setInterval( function ()
-	{            
-		var data = {
-			name: "manojsharan.me", 
-            cpu: {
-                type: cpu_type,
-                util: cpu_util,
-                temp: cpu_temp
+	var heartbeatTimer = setInterval(function () {
+        var results = {
+            Name: "SERVER",
+            CPU: {
+                Type: {
+                    Manufacturer: cpu_type.manufacturer,
+                    Brand: cpu_type.brand,
+                    Speed: cpu_type.speed,
+                    Cores: cpu_type.cores
+                },
+                Utilization: {
+                    System: cpu_util.currentload_system.toFixed(2),
+                    User: cpu_util.currentload_user.toFixed(2),
+                    Total: cpu_util.currentload.toFixed(2)
+                },
+                Temperature: {
+                    Main: cpu_temp.main,
+                    Max: cpu_temp.max
+                }
             },
-            memory: mem_util,
-            filesystem: {
-                fsSize: fsSize,
-                fsStats: fsStats
+            Memory: {
+                Total: mem_util.total,
+                Free: mem_util.free,
+                Used: mem_util.used,
+                Active: mem_util.active,
+                Available: mem_util.available,
+                BufferedCache: mem_util.buffcache,
+                UsedPercent: usedPercent(mem_util.total, mem_util.available),
+                AvailablePercent: availPercent(mem_util.total, mem_util.available)
             },
-            network: netStats
-		};
-		console.log("Emitting Socket event",data)
-		socket.emit("heartbeat", data);
+            Disk: {
+                Used: fsSize[0].use,
+                Read_sec: parseInt(fsStats.rx_sec),
+                Write_sec: parseInt(fsStats.wx_sec),
+                Total_sec: parseInt(fsStats.tx_sec)
+            },
+            Network: {
+                Down_sec: parseInt(netStats.rx_sec),
+                Up_sec: parseInt(netStats.tx_sec),
+                Total_downloaded: netStats.rx,
+                Total_uploaded: netStats.tx
+            }
+        }   
+		console.log("Emitting Socket event")
+		socket.emit("heartbeat", results);
 	}, 1000);
 
 	socket.on('disconnect', function () {
@@ -74,3 +101,14 @@ io.on('connection', function (socket) {
     	clearInterval(heartbeatTimer);
   	});
 });
+
+// Helper functions
+function usedPercent(total, available) {
+    var to_return = ((total-available)/total)*100;
+    return to_return.toFixed(2);
+}
+
+function availPercent(total, available) {
+    var to_return = (available/total)*100;
+    return to_return.toFixed(2);
+}
