@@ -4,8 +4,24 @@ var socket = io.connect('http://0.0.0.0:47874');
 var results;
 
 // Toggle FULL(1)/COMPACT(2) mode
-var toggle = 1;
+var args = process.argv.slice(2);
 
+if(args.length == 0) {
+    console.log("No mode specified! Default to Full mode...");
+    var toggle = 1;
+}
+if (args[0]=='FULL') {
+    var toggle = 1;
+} 
+else if(args[0]=='COMPACT') {
+    var toggle = 2;
+}
+else {
+    console.log("Invalid mode specified! Default to Full mode ...");
+    var toggle = 1;
+}
+
+// Socket to receive emmitted events
 socket.on('heartbeat', function(data) {
   //console.log(data);
   if(toggle == 1) {
