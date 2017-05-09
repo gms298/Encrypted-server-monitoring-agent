@@ -1,41 +1,51 @@
 var io = require('socket.io-client');
+var socket = io.connect('http://0.0.0.0:47874');
 
-var socket = io.connect('http://0.0.0.0:47873');
-var startTime;
 var results;
 
-// setInterval(function() {
-//   startTime = Date.now();
-//   socket.emit('pinging');
-//   console.log("Ping")
-// }, 2000);
-
-// socket.on('pong', function() {
-//   var latency = Date.now() - startTime;
-//   console.log("Latency is",latency);
-// });
+// Toggle FULL(1)/COMPACT(2) mode
+var toggle = 1;
 
 socket.on('heartbeat', function(data) {
   //console.log(data);
-  results = {
-      Server: data.name,
-      CPU: {
-          System: data.cpu.currentload_system.toFixed(2),
-          User: data.cpu.currentload_user.toFixed(2),
-          Total: data.cpu.currentload.toFixed(2)
-      },
-      Memory: {
-          Total: data.memoryLoad.total,
-          Free: data.memoryLoad.free,
-          Used: data.memoryLoad.used,
-          Active: data.memoryLoad.active,
-          Available: data.memoryLoad.available,
-          BufferedCache: data.memoryLoad.buffcache,
-          UsedPercent: usedPercent(data.memoryLoad.total, data.memoryLoad.available),
-          AvailablePercent: availPercent(data.memoryLoad.total, data.memoryLoad.available)
-      }
+  if(toggle == 1) {
+    // FULL MODE
+    results = {
+        Server: data.name,
+        CPU: {
+            Type: {
+                Manufacturer: data.cpu.type.manufacturer,
+                Brand: data.cpu.type.brand,
+                Speed: data.cpu.type.speed,
+                Cores: data.cpu.type.cores
+            },
+            Utilization: {
+                System: data.cpu.util.currentload_system.toFixed(2),
+                User: data.cpu.util.currentload_user.toFixed(2),
+                Total: data.cpu.util.currentload.toFixed(2)
+            },
+            Temperature: {
+                Main: data.cpu.temp.main,
+                Max: data.cpu.temp.max
+            }
+        },
+        Memory: {
+            Total: data.memory.total,
+            Free: data.memory.free,
+            Used: data.memory.used,
+            Active: data.memory.active,
+            Available: data.memory.available,
+            BufferedCache: data.memory.buffcache,
+            UsedPercent: usedPercent(data.memory.total, data.memory.available),
+            AvailablePercent: availPercent(data.memory.total, data.memory.available)
+        }
+    }
+    console.log(results);
   }
-  console.log(results);
+  else {
+      // COMPACT MODE
+
+  }
 });
 
 // Helper functions
