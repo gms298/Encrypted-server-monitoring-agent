@@ -44,14 +44,40 @@ socket.on('heartbeat', function(data) {
             Read_sec: parseInt(data.filesystem.fsStats.rx_sec),
             Write_sec: parseInt(data.filesystem.fsStats.wx_sec),
             Total_sec: parseInt(data.filesystem.fsStats.tx_sec)
+        },
+        Network: {
+            Down_sec: parseInt(data.network.rx_sec),
+            Up_sec: parseInt(data.network.tx_sec),
+            Total_downloaded: data.network.rx,
+            Total_uploaded: data.network.tx
         }
     }
     console.log(results);
   }
   else {
-      // COMPACT MODE
-
-  }
+        // COMPACT MODE
+        results = {
+            Server: data.name,
+            CPU: {
+                Utilization: {
+                    Total: data.cpu.util.currentload.toFixed(2)
+                }
+            },
+            Memory: {
+                UsedPercent: usedPercent(data.memory.total, data.memory.available),
+                AvailablePercent: availPercent(data.memory.total, data.memory.available)
+            },
+            Disk: {
+                Used: data.filesystem.fsSize[0].use,
+                Total_sec: parseInt(data.filesystem.fsStats.tx_sec)
+            },
+            Network: {
+                Down_sec: parseInt(data.network.rx_sec),
+                Up_sec: parseInt(data.network.tx_sec)
+            }
+        }
+        console.log(results);
+    }
 });
 
 // Helper functions

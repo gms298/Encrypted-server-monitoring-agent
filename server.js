@@ -7,6 +7,7 @@ var cpu_temp;
 var cpu_type;
 var fsSize;
 var fsStats;
+var netStats;
 
 // Gather performance data every 500 ms throughout the lifetime
 setInterval(function() {
@@ -31,12 +32,15 @@ setInterval(function() {
     // Disk Statistics
     si.fsSize(function(data) {
         fsSize = data;
-        //console.log(fsSize)
     });
 
     si.fsStats(function(data) {
         fsStats = data;
-        //console.log(fsStats)
+    });
+
+    // Network Statistics
+    si.networkStats('en0', function(data) {
+        netStats = data;
     });
 
 }, 750);
@@ -58,7 +62,8 @@ io.on('connection', function (socket) {
             filesystem: {
                 fsSize: fsSize,
                 fsStats: fsStats
-            }
+            },
+            network: netStats
 		};
 		console.log("Emitting Socket event",data)
 		socket.emit("heartbeat", data);
