@@ -1,13 +1,20 @@
+'use strict';
+// Encryption using URSA npm module
+var fs = require('fs');
+var ursa = require('ursa');
+
 // Websocket Server that website connects to.
 var io = require('socket.io')(47874);
 var si = require('systeminformation');
+
+// Other variable objects
 var cpu_util = 0.0;
-var mem_util;
-var cpu_temp;
-var cpu_type;
-var fsSize;
-var fsStats;
-var netStats;
+var mem_util, cpu_type, fsSize, fsStats, netStats, transmitted_JSON;
+var msg, sig, enc;
+
+// Import keys used in encryption and signature computation
+var privkeyServer = ursa.createPrivateKey(fs.readFileSync('./server/privatekey.pem'));
+var pubkeyClient = ursa.createPublicKey(fs.readFileSync('./client/publickey.pem'));
 
 // Gather performance data every 500 ms throughout the lifetime
 setInterval(function() {
@@ -35,11 +42,11 @@ setInterval(function() {
     });
 
     // Network Statistics
-    si.networkStats('en0', function(data) {
+    si.networkStats('eth1', function(data) {
         netStats = data;
     });
 
-}, 750);
+}, 29000);
 
 // Upon successful connection, emit socket events every 3s
 io.on('connection', function (socket) {
@@ -50,7 +57,7 @@ io.on('connection', function (socket) {
 	console.log("Received connection from "+realIP);
 
     // Check if it is whitelisted (I use a single whitelisted IP here)
-    if(realIP == '') {
+    if(realIP == '127.0.0.1') {
         //Whitelisted, proceed to communication
         var heartbeatTimer = setInterval(function () {
             var results = {
@@ -90,10 +97,29 @@ io.on('connection', function (socket) {
                     Total_downloaded: netStats.rx,
                     Total_uploaded: netStats.tx
                 }
-            }   
-            console.log("Emitting Socket event")
-            socket.emit("heartbeat", results);
-        }, 1000);
+            }
+
+            // Encrypt the results JSON object and add signature
+            msg = JSON.stringify(results);
+
+            // Encryption
+            enc = pubkeyClient.encrypt(msg, 'utf8', 'base64');
+            sig = privkeyServer.hashAndSign('sha256', enc, 'utf8', 'base64');
+
+            // Print encrypted text and signature
+            //console.log('Encrypted message: ', enc, '\n');
+            //console.log('Signature after encryption: ', sig, '\n');
+
+            // Make a JSON with encrypted contents and signature - to transmit over the Internet
+            transmitted_JSON = {
+                                enc: enc,
+                                sig: sig
+                                };
+
+            // Emit a socket.io event  
+            console.log("Emitting Socket event");
+            socket.emit("heartbeat", transmitted_JSON);
+        }, 60000);
     }
     else {
         // Blacklisted, drop socket
@@ -107,8 +133,6 @@ io.on('connection', function (socket) {
         socket.disconnect();
     });
 });
-
-
 
 // Helper functions
 function usedPercent(total, available) {

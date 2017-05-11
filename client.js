@@ -1,7 +1,19 @@
-var io = require('socket.io-client');
-var socket = io.connect(''); // SERVER IP 
+'use strict';
+// Encryption using URSA npm module
+var fs = require('fs');
+var ursa = require('ursa');
 
+// Websocket Client
+var io = require('socket.io-client');
+var socket = io.connect('http://0.0.0.0:47874');
+
+// Other variable objects
 var results;
+var rcv, data, network_JSON;
+
+// Import keys used in decryption and signature computation
+var privkeyClient = ursa.createPrivateKey(fs.readFileSync('./client/privatekey.pem'));
+var pubkeyServer = ursa.createPublicKey(fs.readFileSync('./server/publickey.pem'));
 
 // Toggle FULL(1)/COMPACT(2) mode
 var args = process.argv.slice(2);
@@ -22,33 +34,45 @@ else {
 }
 
 // Socket to receive emmitted events
-socket.on('heartbeat', function(data) {
-  //console.log(data);
-  if(toggle == 1) {
-    // FULL MODE
-    console.log(data);
-  }
-  else {
-    // COMPACT MODE
-    results = {
-        Server: data.Name,
-        CPU: {
-            Utilization: data.CPU.Utilization.Total
-        },
-        Memory: {
-            UsedPercent: data.Memory.UsedPercent,
-            AvailablePercent: data.Memory.AvailablePercent
-        },
-        Disk: {
-            Used: data.Disk.Used,
-            Total_sec: data.Disk.Total_sec
-        },
-        Network: {
-            Down_sec: data.Network.Down_sec,
-            Up_sec: data.Network.Up_sec
+socket.on('heartbeat', function(network_JSON) {
+    // Signature verification
+    var enc = new Buffer(network_JSON.enc).toString('base64');
+
+    if (!pubkeyServer.hashAndVerify('sha256', enc, network_JSON.sig, 'base64')) {
+        throw new Error("Invalid signature, discarding packet..");
+    }
+    else {
+        // Valid signature, proceed to decrypting
+        rcv = privkeyClient.decrypt(network_JSON.enc, 'base64', 'utf8');
+        data = JSON.parse(rcv);
+        
+        // Print the decrypted message
+        if(toggle == 1) {
+            // FULL MODE
+            console.log(data);
+        }
+        else {
+            // COMPACT MODE
+            results = {
+                Server: data.Name,
+                CPU: {
+                    Utilization: data.CPU.Utilization.Total
+                },
+                Memory: {
+                    UsedPercent: data.Memory.UsedPercent,
+                    AvailablePercent: data.Memory.AvailablePercent
+                },
+                Disk: {
+                    Used: data.Disk.Used,
+                    Total_sec: data.Disk.Total_sec
+                },
+                Network: {
+                    Down_sec: data.Network.Down_sec,
+                    Up_sec: data.Network.Up_sec
+                }
+            }
+            console.log(results);
         }
     }
-    console.log(results);
-  }
 });
 
