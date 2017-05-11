@@ -4,7 +4,7 @@ var fs = require('fs');
 var ursa = require('ursa');
 
 // Websocket Server that website connects to.
-var io = require('socket.io')(47874);
+var io = require('socket.io')(); // Enter any PORT number desired
 var si = require('systeminformation');
 
 // Other variable objects

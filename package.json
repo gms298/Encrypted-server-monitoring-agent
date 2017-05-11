@@ -9,6 +9,7 @@
   "author": "Manoj Sharan",
   "license": "ISC",
   "dependencies": {
+    "forever": "^0.15.3",
     "fs": "0.0.1-security",
     "socket.io": "^1.7.4",
     "systeminformation": "^3.17.3",

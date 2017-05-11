@@ -5,7 +5,7 @@ var ursa = require('ursa');
 
 // Websocket Client
 var io = require('socket.io-client');
-var socket = io.connect('http://0.0.0.0:47874');
+var socket = io.connect(''); // Server's IP address and port number (Eg., `http://192.1.1.47:8765`)
 
 // Other variable objects
 var results;
