@@ -1,5 +1,5 @@
 var io = require('socket.io-client');
-var socket = io.connect('http://0.0.0.0:47874');
+var socket = io.connect(''); // SERVER IP 
 
 var results;
 
@@ -33,9 +33,7 @@ socket.on('heartbeat', function(data) {
     results = {
         Server: data.Name,
         CPU: {
-            Utilization: {
-                Total: data.CPU.Utilization.Total
-            }
+            Utilization: data.CPU.Utilization.Total
         },
         Memory: {
             UsedPercent: data.Memory.UsedPercent,
