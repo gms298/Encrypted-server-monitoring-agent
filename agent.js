@@ -18,7 +18,7 @@ SERVER_NAME = "MYSERVER"
 WHITELIST = ["127.0.0.1", "0.0.0.0"]
 
 // Import keys used in encryption and signature computation
-var privkeyServer = ursa.createPrivateKey(fs.readFileSync('./client/privatekey.pem'));
+var privkeyServer = ursa.createPrivateKey(fs.readFileSync('./server/privatekey.pem'));
 var pubkeyClient = ursa.createPublicKey(fs.readFileSync('./client/publickey.pem'));
 
 // Gather performance data every 500 ms throughout the lifetime
