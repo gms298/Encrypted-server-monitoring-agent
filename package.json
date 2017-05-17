@@ -1,7 +1,7 @@
 {
-  "name": "monitoring",
+  "name": "serveragent",
   "version": "1.0.0",
-  "description": "Just another monitoring app",
+  "description": "Just another monitoring agent for server clusters",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,8 +11,10 @@
   "dependencies": {
     "forever": "^0.15.3",
     "fs": "0.0.1-security",
+    "redis": "^2.7.1",
     "socket.io": "^1.7.4",
     "systeminformation": "^3.17.3",
+    "underscore": "^1.8.3",
     "ursa": "^0.9.4"
   }
 }

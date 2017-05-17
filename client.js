@@ -5,7 +5,7 @@ var ursa = require('ursa');
 
 // Websocket Client
 var io = require('socket.io-client');
-var socket = io.connect(''); // Server's IP address and port number (Eg., `http://192.1.1.47:8765`)
+var socket = io.connect('http://127.0.0.1:8765'); // Server's IP address and port number (Eg., `http://test.com:8765`)
 
 // Other variable objects
 var results;
@@ -49,12 +49,12 @@ socket.on('heartbeat', function(network_JSON) {
         // Print the decrypted message
         if(toggle == 1) {
             // FULL MODE
+            console.log("\n"+network_JSON.name+"\n");
             console.log(data);
         }
         else {
             // COMPACT MODE
             results = {
-                Server: data.Name,
                 CPU: {
                     Utilization: data.CPU.Utilization.Total
                 },
@@ -71,6 +71,7 @@ socket.on('heartbeat', function(network_JSON) {
                     Up_sec: data.Network.Up_sec
                 }
             }
+            console.log("\n"+network_JSON.name+"\n");
             console.log(results);
         }
     }

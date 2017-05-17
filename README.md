@@ -1,8 +1,10 @@
-# Monitoring-using-Socket.IO
+# Server Monitoring Agent
 
 ## Description
 
-A continuous server monitoring application written in node.JS using Socket.IO npm module. End-to-End Encryption is used to protect the data in transit using unique **8192 bit RSA keys and SHA256 signatures**. The metrics collected are output as a JSON. Hence, integration with other applications (like this [Monitor-bot](https://github.com/gms298/Monitor-bot) that I built) is easy.
+A continuous server monitoring agent that is lightweight and fully encrypted written in node.JS using Socket.IO npm module. End-to-End Encryption is used to protect the data in transit using **Asymmetric RSA encryption and SHA256 signatures**. 
+
+The server agent outputs metrics in JSON format. The agent was built with compatibility in mind. Hence, integration with other suite of applications is pretty straightforward.
 
 The application collects the following metrics:
 

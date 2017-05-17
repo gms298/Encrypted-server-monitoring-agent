@@ -2,18 +2,23 @@
 // Encryption using URSA npm module
 var fs = require('fs');
 var ursa = require('ursa');
+var _ = require('underscore');
 
 // Websocket Server that website connects to.
-var io = require('socket.io')(); // Enter any PORT number desired
+var io = require('socket.io')(8765);
 var si = require('systeminformation');
 
 // Other variable objects
 var cpu_util = 0.0;
 var mem_util, cpu_type, fsSize, fsStats, netStats, transmitted_JSON;
-var msg, sig, enc;
+var msg, sig, enc, SERVER_NAME, WHITELIST;
+
+// Set Server Name and Whitelist
+SERVER_NAME = "MYSERVER"
+WHITELIST = ["127.0.0.1", "0.0.0.0"]
 
 // Import keys used in encryption and signature computation
-var privkeyServer = ursa.createPrivateKey(fs.readFileSync('./server/privatekey.pem'));
+var privkeyServer = ursa.createPrivateKey(fs.readFileSync('./client/privatekey.pem'));
 var pubkeyClient = ursa.createPublicKey(fs.readFileSync('./client/publickey.pem'));
 
 // Gather performance data every 500 ms throughout the lifetime
@@ -42,11 +47,11 @@ setInterval(function() {
     });
 
     // Network Statistics
-    si.networkStats('eth1', function(data) {
+    si.networkStats('en0', function(data) {
         netStats = data;
     });
 
-}, 29000);
+}, 500);
 
 // Upon successful connection, emit socket events every 3s
 io.on('connection', function (socket) {
@@ -54,14 +59,13 @@ io.on('connection', function (socket) {
     var clientIp = socket.request.connection.remoteAddress;
     clientIp=clientIp.toString();
     var realIP = clientIp.split('f:')[1];
-	console.log("Received connection from "+realIP);
+    console.log("Received connection from "+realIP);
 
-    // Check if it is whitelisted (I use a single whitelisted IP here)
-    if(realIP == '127.0.0.1') {
+    // Check if client's IP is whitelisted
+    if(_.contains(WHITELIST, realIP)) {
         //Whitelisted, proceed to communication
         var heartbeatTimer = setInterval(function () {
             var results = {
-                Name: "SERVER",
                 CPU: {
                     Type: {
                         Manufacturer: cpu_type.manufacturer,
@@ -107,11 +111,13 @@ io.on('connection', function (socket) {
             sig = privkeyServer.hashAndSign('sha256', enc, 'utf8', 'base64');
 
             // Print encrypted text and signature
+
             //console.log('Encrypted message: ', enc, '\n');
             //console.log('Signature after encryption: ', sig, '\n');
 
             // Make a JSON with encrypted contents and signature - to transmit over the Internet
             transmitted_JSON = {
+                                name: SERVER_NAME,
                                 enc: enc,
                                 sig: sig
                                 };
@@ -119,7 +125,7 @@ io.on('connection', function (socket) {
             // Emit a socket.io event  
             console.log("Emitting Socket event");
             socket.emit("heartbeat", transmitted_JSON);
-        }, 60000);
+        }, 1100);
     }
     else {
         // Blacklisted, drop socket
