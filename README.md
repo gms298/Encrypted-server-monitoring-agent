@@ -44,9 +44,9 @@ Clone this repository and change directories.
 
 * Change directories again 1 level up where package.json is located. Run `npm install` to automatically install all dependencies required by this project.
 
-* Modify the [server.js](https://github.com/gms298/Monitoring-Analysis-using-Socket.IO/blob/master/server.js#L7) source code to reflect the actual port number to run this monitoring server on.
+* Modify the [server.js](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/client.js#L8) source code to reflect the actual port number to run this monitoring server on.
 
-* The server has a predefined whitelist IP address to accept incoming connections. Change [this IP address](https://github.com/gms298/Monitoring-Analysis-using-Socket.IO/blob/master/server.js#L60) to reflect the actual client's IP address. 
+* The server has a predefined whitelist of IP addresses to accept incoming connections. Add the actual client's IP address [to this list](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/server.js#L18). 
 
 * Run the server using [forever](https://www.npmjs.com/package/forever) `forever start server.js`
 
@@ -66,6 +66,6 @@ Clone this repository and change directories.
 
 * Change directories again 1 level up where package.json is located. Run `npm install` to automatically install all dependencies required by this project.
 
-* Modify the [client.js](https://github.com/gms298/Monitoring-Analysis-using-Socket.IO/blob/master/client.js#L8) source code to reflect the actual IP address & port number of the server to connect.
+* Modify the [client.js](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/client.js#L8) source code to reflect the actual IP address & port number of the server to connect.
 
 * Run the client using `nodejs client.js` or `node client.js` (for legacy node.JS)
