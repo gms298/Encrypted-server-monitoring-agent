@@ -53,7 +53,7 @@ setInterval(function() {
 
 }, 500);
 
-// Upon successful connection, emit socket events every 3s
+// Upon successful connection, emit socket events every 1.1s
 io.on('connection', function (socket) {
     // Get the IP address
     var clientIp = socket.request.connection.remoteAddress;
