@@ -28,7 +28,7 @@ The application can be run in two modes, from the client side:
 
 ## Execution
 
-### Server-side
+### Server-side (Monitoring agent)
 
 Clone this repository and change directories.
 
@@ -40,17 +40,17 @@ Clone this repository and change directories.
 	
 	`openssl rsa -in privatekey.pem -pubout -out publickey.pem` to generate the public key.
 
-* Copy the `publickey.pem` file to the client-side - usign the same directory structure i.e., create `server` folder and paste inside.
+* Copy the `publickey.pem` file to the client-side - using the same directory structure i.e., create `server` folder and paste inside.
 
 * Change directories again 1 level up where package.json is located. Run `npm install` to automatically install all dependencies required by this project.
 
-* Modify the [server.js](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/client.js#L8) source code to reflect the actual port number to run this monitoring server on.
+* Modify the [agent.js](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/agent.js#L8) source code to reflect the actual port number to run this monitoring agent on.
 
-* The server has a predefined whitelist of IP addresses to accept incoming connections. Add the actual client's IP address [to this list](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/server.js#L18). 
+* The server agent has a predefined whitelist of IP addresses to accept incoming connections. Add the actual client's IP address [to this list](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/agent.js#L18). 
 
-* Run the server using [forever](https://www.npmjs.com/package/forever) `forever start server.js`
+* Run the agent using [forever](https://www.npmjs.com/package/forever) `forever start agent.js`
 
-### Client-side
+### Client-side (Demo - Receiving events from agent)
 
 Clone this repository and change directories.
 
@@ -62,10 +62,10 @@ Clone this repository and change directories.
 	
 	`openssl rsa -in privatekey.pem -pubout -out publickey.pem` to generate the public key.
 
-* Copy the `publickey.pem` file to the server-side - usign the same directory structure i.e., create `client` folder and paste inside.
+* Copy the `publickey.pem` file to the server-side - using the same directory structure i.e., create `client` folder and paste inside.
 
 * Change directories again 1 level up where package.json is located. Run `npm install` to automatically install all dependencies required by this project.
 
-* Modify the [client.js](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/client.js#L8) source code to reflect the actual IP address & port number of the server to connect.
+* Modify the [client.js](https://github.com/gms298/Encrypted-server-monitoring-agent/blob/master/client.js#L8) source code to reflect the actual IP address & port number of the server-agent to connect to.
 
 * Run the client using `nodejs client.js` or `node client.js` (for legacy node.JS)
